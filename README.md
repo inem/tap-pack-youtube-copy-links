@@ -33,10 +33,11 @@ rollback continue to work offline.
 | `tools/check_seams.py` | Offline bridge/injection seam check |
 | `tools/check_live.py` | Fresh-profile public YouTube check |
 
-## Build and install
+## Install the prerelease
 
-Build the self-contained artifact as shown below, then, with the TAP profile
-stopped:
+Download the self-contained `.tap-pack` and checksum from
+[v0.1.0](https://github.com/inem/tap-pack-youtube-copy-links/releases/tag/v0.1.0),
+then, with the TAP profile stopped:
 
 ```sh
 ./tap --profile /absolute/profile pack install \
