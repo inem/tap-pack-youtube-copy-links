@@ -1,7 +1,7 @@
 # Provenance and license review
 
 The owner requested extraction of the generic lower layer from their private
-TAP work into the MIT-licensed `inem/tap-core` repository. This transfer is
+TAP work into this MIT-licensed public pack repository. This transfer is
 limited to the two example artifacts below. It is not a license claim about the
 rest of the private tree, future packs or YouTube itself.
 
@@ -26,9 +26,9 @@ consumer without separate evidence or a provider revision.
 
 Both reviewed sources carry no separate third-party LICENSE/COPYING/NOTICE and no
 embedded third-party copyright headers. Inspected authorship is the repository
-owner. Under the owner’s requested extraction into `tap-core`, these two
-artifacts are published under this repository’s MIT license
-(`LICENSE`, Copyright (c) 2026 TAP Core contributors).
+owner. Under the owner’s requested extraction, these two artifacts are
+published under this repository’s MIT license
+(`LICENSE`, Copyright (c) 2026 TAP contributors).
 
 No third-party runtime is vendored here. YouTube page DOM is not redistributed;
 the scripts only target it at runtime in the user’s browser.
