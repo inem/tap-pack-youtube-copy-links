@@ -9,7 +9,9 @@
   "csp_header_present": true,
   "bootstrap_nonce_present": false,
   "tls": "accepted only with Playwright ignoreHTTPSErrors; CA trust not established",
-  "artifact_sha256": "9e6f849b9627be87fc3e71e43d10e893ba7a741391c5823651fd67da0849827a",
+  "artifact_sha256": "c80396d9a463b0b7a66d0caf4bf8e87891368110fbacb7d41c885ff050c4a79a",
+  "release_tag": "v0.1.0",
+  "release_commit": "4d7dce57c68e2895ac3683ad11d01270d66a8a98",
   "installed_version": "0.1.0",
   "installed_code": "packs/example.youtube-copy-links/versions/0.1.0",
   "installed_page_scripts": [
