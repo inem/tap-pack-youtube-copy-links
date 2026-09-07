@@ -1,0 +1,34 @@
+name: validate
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  pack:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check out the compatible TAP Core contract
+        uses: actions/checkout@v4
+        with:
+          repository: inem/tap-core
+          ref: 07741f7c63071362d8591a89e00acd740f9a1a93
+          path: .tap-core
+      - name: Validate provider, pack and injection seam
+        env:
+          PYTHONPATH: .tap-core
+        run: |
+          python3 -B -m tap_core.page_resources .
+          python3 -B -m tap_core.packs .
+          python3 -B tools/check_seams.py
+      - name: Verify deterministic artifact
+        env:
+          PYTHONPATH: .tap-core
+        run: |
+          python3 -B -m tap_core.pack_store build . --output "$RUNNER_TEMP/first.tap-pack"
+          python3 -B -m tap_core.pack_store build . --output "$RUNNER_TEMP/second.tap-pack"
+          cmp "$RUNNER_TEMP/first.tap-pack" "$RUNNER_TEMP/second.tap-pack"
