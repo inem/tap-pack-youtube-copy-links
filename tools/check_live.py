@@ -84,7 +84,8 @@ def main():
             reserve_port() as proxy, reserve_port() as hub:
         root = Path(directory)
         profile = root / 'profile'
-        artifact = root / 'example.youtube-copy-links-0.2.0.tap-pack'
+        version = json.loads((ROOT / 'pack.json').read_text())['version']
+        artifact = root / ('example.youtube-copy-links-' + version + '.tap-pack')
         bridge = root / 'bridge.json'
         browser_config = root / 'browser.json'
         browser_output = root / 'browser-result.json'
@@ -107,7 +108,7 @@ def main():
             started = True
             run(prefix + ['off'])
             run(prefix + ['pack', 'install', artifact])
-            run(prefix + ['pack', 'enable', 'example.youtube-copy-links', '--version', '0.2.0',
+            run(prefix + ['pack', 'enable', 'example.youtube-copy-links', '--version', version,
                           '--grant-origin', 'https://www.youtube.com',
                           '--grant-origin', 'https://youtube.com',
                           '--grant-capability', 'page.inject'])

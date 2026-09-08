@@ -26,6 +26,7 @@ EXAMPLE = ROOT
 UI = EXAMPLE / 'youtube-ui.js'
 BOOTSTRAP = EXAMPLE / 'copy-links.js'
 STATUS = EXAMPLE / 'caption-status.js'
+PAGE_FILES = [ROOT / r['file'] for r in json.loads((ROOT / 'pack.json').read_text())['resources']]
 def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 ORIGINS = ['https://www.youtube.com', 'https://youtube.com']
 
@@ -41,7 +42,7 @@ def bridge_config(hub_port=19002, proxy_port=19001):
         'hub_port': hub_port,
         'allow_origins': list(ORIGINS),
         'exclude_origins': [],
-        'page_scripts': [str(UI.resolve()), str(STATUS.resolve()), str(BOOTSTRAP.resolve())],
+        'page_scripts': [str(path.resolve()) for path in PAGE_FILES],
     })
 
 
@@ -52,8 +53,9 @@ def check_files():
     assert 'window.YouTubeUI' in ui or 'YouTubeUI =' in ui, 'youtube-ui.js missing API'
     assert 'window.__tapYoutubeCopyLinks' in boot, 'bootstrap marker missing'
     assert 'if (!window.YouTubeUI) return;' in boot, 'bootstrap must require YouTubeUI'
-    assert 'addVideoCardAction' in boot and 'addWatchVideoAction' in boot
-    assert 'clipboard.writeText' in boot
+    controls = (ROOT / 'youtube-copy-controls.js').read_text()
+    assert 'addVideoCardAction' in controls and 'addWatchVideoAction' in controls
+    assert 'copy_link' in boot
     # Delivery changed: no custom mutator asset path and no CSP strip in this package.
     assert '/__tap/youtube-copy-links.js' not in boot
     assert 'content-security-policy' not in boot.lower()
@@ -82,9 +84,9 @@ def check_port_collision():
 
 def check_admit(config):
     scripts = read_scripts(config)
-    assert len(scripts) == 3
+    assert len(scripts) == len(PAGE_FILES)
     assert scripts[0].startswith(UI.read_bytes()[:64])
-    assert b'__tapYoutubeCopyLinks' in scripts[2]
+    assert b'__tapYoutubeCopyLinks' in scripts[-1]
     for origin in ORIGINS:
         result = decision(config, origin)
         assert result['allowed'] is True and result['reason'] == 'explicit_allow'

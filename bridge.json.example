@@ -8,8 +8,12 @@
   ],
   "exclude_origins": [],
   "page_scripts": [
-    "/ABS/PATH/TO/tap-pack-youtube-copy-links/youtube-ui.js",
-    "/ABS/PATH/TO/tap-pack-youtube-copy-links/caption-status.js",
-    "/ABS/PATH/TO/tap-pack-youtube-copy-links/copy-links.js"
+    "/absolute/path/to/tap-pack-youtube-copy-links/youtube-ui.js",
+    "/absolute/path/to/tap-pack-youtube-copy-links/link-copy.js",
+    "/absolute/path/to/tap-pack-youtube-copy-links/youtube-link-policy.js",
+    "/absolute/path/to/tap-pack-youtube-copy-links/caption-status.js",
+    "/absolute/path/to/tap-pack-youtube-copy-links/youtube-captions.js",
+    "/absolute/path/to/tap-pack-youtube-copy-links/youtube-copy-controls.js",
+    "/absolute/path/to/tap-pack-youtube-copy-links/copy-links.js"
   ]
 }
