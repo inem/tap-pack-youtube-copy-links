@@ -5,6 +5,7 @@ Fixture-only. Does not start a proxy, Hub, browser or system network change.
 Live HTTPS/CSP/certificate evidence remains a separate check.
 """
 import argparse
+import hashlib
 import json
 from pathlib import Path
 import sys
@@ -24,6 +25,8 @@ from tap_core.bridge import (  # noqa: E402
 EXAMPLE = ROOT
 UI = EXAMPLE / 'youtube-ui.js'
 BOOTSTRAP = EXAMPLE / 'copy-links.js'
+STATUS = EXAMPLE / 'caption-status.js'
+def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 ORIGINS = ['https://www.youtube.com', 'https://youtube.com']
 
 
@@ -38,7 +41,7 @@ def bridge_config(hub_port=19002, proxy_port=19001):
         'hub_port': hub_port,
         'allow_origins': list(ORIGINS),
         'exclude_origins': [],
-        'page_scripts': [str(UI.resolve()), str(BOOTSTRAP.resolve())],
+        'page_scripts': [str(UI.resolve()), str(STATUS.resolve()), str(BOOTSTRAP.resolve())],
     })
 
 
@@ -57,8 +60,8 @@ def check_files():
     import hashlib
     assert hashlib.sha256(UI.read_bytes()).hexdigest() == (
         '77317dfe7a6708eb0d96ce465ce619aefb5a226b4c4ebaa8c16c78540cc467ed')
-    assert hashlib.sha256(BOOTSTRAP.read_bytes()).hexdigest() == (
-        '2b3ceae0470ba11023534f49333df29f2540b9319b14e047779c4167bc852daf')
+    manifest = json.loads((ROOT / 'pack.json').read_text())
+    assert all(digest(ROOT / r['file']) == r['sha256'] for r in manifest['resources'])
     return ui, boot
 
 
@@ -79,9 +82,9 @@ def check_port_collision():
 
 def check_admit(config):
     scripts = read_scripts(config)
-    assert len(scripts) == 2
+    assert len(scripts) == 3
     assert scripts[0].startswith(UI.read_bytes()[:64])
-    assert b'__tapYoutubeCopyLinks' in scripts[1]
+    assert b'__tapYoutubeCopyLinks' in scripts[2]
     for origin in ORIGINS:
         result = decision(config, origin)
         assert result['allowed'] is True and result['reason'] == 'explicit_allow'
@@ -147,19 +150,20 @@ def check_injection(config, scripts):
     assert MARKER in body
     assert f'nonce="abc123"' in body
     assert f'{PREFIX}runtime.js?token={token}' in body
-    assert f'{PREFIX}core/0.js?token={token}' in body
-    assert f'{PREFIX}core/1.js?token={token}' in body
-    assert body.index('core/0.js') < body.index('core/1.js')
+    assert f'{PREFIX}core/{digest(UI)}.js?token={token}' in body
+    assert f'{PREFIX}core/{digest(BOOTSTRAP)}.js?token={token}' in body
+    assert body.index(f'core/{digest(UI)}.js') < body.index(f'core/{digest(BOOTSTRAP)}.js')
+    assert body.index(f'core/{digest(STATUS)}.js') < body.index(f'core/{digest(BOOTSTRAP)}.js')
     assert body.index(MARKER) < body.index('</body>')
     # Absolute asset URLs from the intercepted origin, not a foreign base.
-    assert 'https://www.youtube.com/__tap/probe/core/0.js' in body
+    assert f'https://www.youtube.com/__tap/probe/core/{digest(UI)}.js' in body
     parsed = DocumentScripts(body)
     assert parsed.has_bootstrap is True
     # Second pass must not duplicate bootstrap.
     again = _Flow(body)
     bridge.response(again)
     assert again.response.get_text().count(MARKER) == 1
-    assert again.response.get_text().count('core/0.js') == 1
+    assert again.response.get_text().count(f'core/{digest(UI)}.js') == 1
 
 
 def check_asset_routes(config, scripts):
@@ -177,15 +181,15 @@ def check_asset_routes(config, scripts):
             self.response = None
             self.metadata = {}
 
-    ok = Flow(f'{PREFIX}core/0.js?token={token}')
+    ok = Flow(f'{PREFIX}core/{digest(UI)}.js?token={token}')
     bridge.requestheaders(ok)
     assert ok.response.status_code == 200
     assert ok.response.content == scripts[0]
-    boot = Flow(f'{PREFIX}core/1.js?token={token}')
+    boot = Flow(f'{PREFIX}core/{digest(BOOTSTRAP)}.js?token={token}')
     bridge.requestheaders(boot)
     assert boot.response.status_code == 200
     assert b'__tapYoutubeCopyLinks' in boot.response.content
-    bad = Flow(f'{PREFIX}core/0.js?token={"00" * 24}')
+    bad = Flow(f'{PREFIX}core/{digest(UI)}.js?token={"00" * 24}')
     bridge.requestheaders(bad)
     assert bad.response.status_code == 403
     # runtime.js is not an in-memory asset: it is rewritten toward the Hub.
@@ -195,7 +199,7 @@ def check_asset_routes(config, scripts):
     assert runtime.request.host == '127.0.0.1'
     assert runtime.request.port == config['hub_port']
     # music.youtube.com is outside allow_origins
-    foreign = Flow(f'{PREFIX}core/0.js?token={token}')
+    foreign = Flow(f'{PREFIX}core/{digest(UI)}.js?token={token}')
     foreign.request.host = 'music.youtube.com'
     bridge.requestheaders(foreign)
     assert foreign.response.status_code == 403
@@ -228,10 +232,7 @@ def main():
         'fingerprint': fingerprint(config),
         'proxy_port': args.proxy_port,
         'hub_port': config['hub_port'],
-        'scripts': [
-            {'path': config['page_scripts'][0], 'bytes': len(scripts[0])},
-            {'path': config['page_scripts'][1], 'bytes': len(scripts[1])},
-        ],
+        'scripts': [{'path': path, 'bytes': len(body)} for path, body in zip(config['page_scripts'], scripts)],
         'origins_allowed': ORIGINS,
         'csp': 'preserved_in_fixture_injection',
         'runtime_js': 'forwarded_to_hub_port',

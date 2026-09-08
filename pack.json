@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "id": "example.youtube-copy-links",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "requires": {
     "pack_api": 1,
     "dependencies": []
@@ -11,7 +11,8 @@
     "PROVENANCE.md",
     "README.md",
     "youtube-ui.js",
-    "copy-links.js"
+    "copy-links.js",
+    "caption-status.js"
   ],
   "resources": [
     {
@@ -26,13 +27,23 @@
     },
     {
       "contract": "tap.page-resource/v1",
+      "id": "example.youtube-copy-links.caption-status",
+      "version": "0.2.0",
+      "kind": "browser-classic-script",
+      "file": "caption-status.js",
+      "sha256": "950f62d1bfb4bab1c3a5f00d3ec74f8d5150dac30ff7281af510f10c4b54e3f9",
+      "license": "MIT",
+      "source_revision": "sha256:950f62d1bfb4bab1c3a5f00d3ec74f8d5150dac30ff7281af510f10c4b54e3f9"
+    },
+    {
+      "contract": "tap.page-resource/v1",
       "id": "example.youtube-copy-links.feature",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "kind": "browser-classic-script",
       "file": "copy-links.js",
-      "sha256": "2b3ceae0470ba11023534f49333df29f2540b9319b14e047779c4167bc852daf",
+      "sha256": "166513221b2db4961857af855fd3e38347b2a600d8736c0253aab458d5982eec",
       "license": "MIT",
-      "source_revision": "sha256:2b3ceae0470ba11023534f49333df29f2540b9319b14e047779c4167bc852daf"
+      "source_revision": "sha256:166513221b2db4961857af855fd3e38347b2a600d8736c0253aab458d5982eec"
     }
   ],
   "entrypoints": {
@@ -44,8 +55,12 @@
           "version": "0.1.0"
         },
         {
+          "id": "example.youtube-copy-links.caption-status",
+          "version": "0.2.0"
+        },
+        {
           "id": "example.youtube-copy-links.feature",
-          "version": "0.1.0"
+          "version": "0.2.0"
         }
       ]
     }

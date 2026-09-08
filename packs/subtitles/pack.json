@@ -1,0 +1,29 @@
+{
+  "manifest_version": 1,
+  "id": "youtube.subtitles",
+  "version": "0.1.0",
+  "requires": {
+    "pack_api": 1,
+    "dependencies": []
+  },
+  "files": [
+    "reader.py",
+    "LICENSE"
+  ],
+  "entrypoints": {
+    "reader": {
+      "interface": "python-jsonl-v1",
+      "file": "reader.py"
+    }
+  },
+  "config": {},
+  "access": {
+    "origins": [
+      "https://www.youtube.com",
+      "https://youtube.com"
+    ],
+    "capabilities": [
+      "capture.read"
+    ]
+  }
+}
