@@ -1,0 +1,29 @@
+{
+  "manifest_version": 1,
+  "id": "youtube.subtitle-status",
+  "version": "0.1.0",
+  "requires": {
+    "pack_api": 1,
+    "dependencies": []
+  },
+  "files": [
+    "handler.py",
+    "LICENSE"
+  ],
+  "entrypoints": {
+    "handler": {
+      "interface": "python-jsonl-v1",
+      "file": "handler.py"
+    }
+  },
+  "config": {},
+  "access": {
+    "origins": [
+      "https://www.youtube.com",
+      "https://youtube.com"
+    ],
+    "capabilities": [
+      "bridge.handle"
+    ]
+  }
+}

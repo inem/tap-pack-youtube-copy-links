@@ -41,3 +41,21 @@ the scripts only target it at runtime in the user’s browser.
 | Copy icons were HTML strings passed through `innerHTML` | Copy icons are created with `createElementNS` so current YouTube Trusted Types policy accepts them |
 
 Scripts are snapshot inputs at profile `on`, not a hot mutator asset path.
+
+## Subtitle slice (unreleased 0.2.0)
+
+The original caption-fetch path was already present in `copy-links.js`. This
+revision distinguishes an HTTP body received (`fetched`) from a matching local
+file confirmed by a handler (`saved`). `caption-status.js`, the Python reader,
+and read-only status handler are new code under this repository's MIT license.
+
+The reader behavior is grounded in the owner's legacy
+`read/reader_youtube.exs` and `schemas/youtube.json`: join player details and
+raw timedtext by videoId. No Elixir code or runtime is packaged. The host-facing
+JSONL reader/handler implementations reuse TAP Core's Python runtime; injected
+page behavior remains JavaScript. No captured user data, caption samples from
+YouTube, tokens or private session contents are included. Test captions are synthetic.
+
+On Core with #72, page script URLs use content hashes and new documents can
+pick up page-only changes without a proxy restart. These scripts still use the
+classic-script contract: changing already executed code requires page reload.

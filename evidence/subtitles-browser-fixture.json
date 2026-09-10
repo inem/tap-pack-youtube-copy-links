@@ -1,0 +1,42 @@
+{
+  "scope": "synthetic DOM and HTTP/WS responses; real Chrome, source scripts",
+  "browser": "152.0.7977.76",
+  "passed": true,
+  "checks": [
+    {
+      "mode": "off",
+      "copy": true,
+      "caption_requests": 1,
+      "local": "unavailable",
+      "status": "fetched"
+    },
+    {
+      "mode": "connected",
+      "copy": true,
+      "caption_requests": 1,
+      "local": "saved",
+      "status": "fetched"
+    },
+    {
+      "mode": "disconnected",
+      "copy": true,
+      "caption_requests": 1,
+      "local": "unavailable",
+      "status": "fetched"
+    },
+    {
+      "mode": "empty",
+      "copy": true,
+      "caption_requests": 1,
+      "local": null,
+      "status": "failed"
+    },
+    {
+      "mode": "unavailable",
+      "copy": true,
+      "caption_requests": 0,
+      "local": null,
+      "status": "unavailable"
+    }
+  ]
+}

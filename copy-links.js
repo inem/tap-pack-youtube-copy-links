@@ -124,9 +124,21 @@
       }
       requestState.trackUrl = track.baseUrl;
       return fetch(track.baseUrl, { credentials: 'include' }).then(function(response){
-        return response.text().then(function(){
-          requestState.status = response.ok ? 'captured' : 'failed';
-          return response.ok;
+        return response.text().then(function(text){
+          var received = response.ok && !!text.trim();
+          requestState.status = received ? 'fetched' : 'failed';
+          if (received && window.TapYouTubeCaptionStatus) {
+            requestState.local = 'checking';
+            window.TapYouTubeCaptionStatus(videoId, text).then(function(local){
+              requestState.local = local;
+              if (state.lastCaptionRequest === requestState) {
+                UI.showToast(local === 'saved' ? 'Subtitles saved locally' :
+                  local === 'unavailable' ? 'Subtitles fetched · local confirmation unavailable' :
+                  'Subtitles fetched · local save not confirmed');
+              }
+            }).catch(function(){ requestState.local = 'unavailable'; });
+          }
+          return received;
         });
       });
     }).catch(function(error){

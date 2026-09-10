@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: inem/tap-core
-          ref: 8912125b27f354f8e5efce23b763f66cdc8569c8
+          ref: 4eb7308acee0fb81ee4c671c1c4be6d7da67de0f
           path: .tap-core
       - name: Validate provider, pack and injection seam
         env:
