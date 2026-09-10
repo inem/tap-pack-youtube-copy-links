@@ -87,7 +87,7 @@ Three independently enabled artifacts live in this repository:
 | Artifact | Role | Needs Hub? |
 | --- | --- | --- |
 | `example.youtube-copy-links@0.3.0` | Existing page UI and caption request, plus optional confirmation | No for page behavior |
-| `youtube.subtitles@0.1.0` | Reader writes retained player/details and timedtext bodies | No for reader-only profile |
+| `youtube.subtitles@0.1.1` | Reader writes retained player/details and timedtext bodies | No for reader-only profile |
 | `youtube.subtitle-status@0.1.0` | Read-only handler confirms matching videoId + text hash | Yes |
 
 The confirmation helper only uses an already connected `TapBridge`; it never
@@ -115,6 +115,9 @@ track replaces that video's latest subtitle snapshot; this slice does not keep
 all languages/versions or export Markdown. Streamed/omitted/empty/oversize bodies
 leave the previous snapshot intact. Replay safely overwrites the same files.
 The status pack reads this explicit same-profile reader output by convention;
+
+Version 0.1.1 declares that output directory as a generic folder feature so TAP
+presentations can show and reveal it without understanding subtitle semantics.
 this is a trusted local pack relationship, not filesystem sandboxing. Its reply
 contains neither transcript text nor file paths.
 
@@ -122,7 +125,7 @@ Build the three artifacts using current TAP Core on `PYTHONPATH`:
 
 ```sh
 python3 -B -m tap_core.pack_store build . --output /tmp/copy-0.3.0.tap-pack
-python3 -B -m tap_core.pack_store build packs/subtitles --output /tmp/subtitles-0.1.0.tap-pack
+python3 -B -m tap_core.pack_store build packs/subtitles --output /tmp/subtitles-0.1.1.tap-pack
 python3 -B -m tap_core.pack_store build packs/subtitle-status --output /tmp/subtitle-status-0.1.0.tap-pack
 ```
 
