@@ -1,7 +1,7 @@
 {
   "manifest_version": 1,
   "id": "youtube.subtitles",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "requires": {
     "pack_api": 1,
     "dependencies": []
@@ -16,6 +16,14 @@
       "file": "reader.py"
     }
   },
+  "features": [
+    {
+      "id": "subtitle-archive",
+      "label": "Subtitle archive",
+      "value": "Captured details and subtitles",
+      "folder": "data/readers/youtube.subtitles"
+    }
+  ],
   "config": {},
   "access": {
     "origins": [
