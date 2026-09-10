@@ -26,12 +26,54 @@ rollback continue to work offline.
 | File | Role |
 | --- | --- |
 | `youtube-ui.js` | Reusable DOM adapter exposed as `window.YouTubeUI` |
-| `copy-links.js` | Copy-links feature bootstrap |
+| `link-copy.js` | Site-independent `copy_link(link, clipboard)` and DOM-selector / browser-clipboard adapters |
+| `youtube-link-policy.js` | YouTube link selection and short/original URL format |
+| `youtube-copy-controls.js` | Existing YouTube buttons and gestures; injected copy action |
+| `youtube-captions.js` | Caption request operation; no Copy or UI dependency |
+| `caption-status.js` | Optional local-save confirmation via existing TapBridge |
+| `copy-links.js` | Explicit assembly: bind policy, Copy, UI and optional captions |
 | `tap-resource.json` | Standalone `youtube.ui` provider declaration |
 | `pack.json` | Pack identity, access requests, frozen resources and ordered uses |
 | `PROVENANCE.md` | Source hashes, attribution and license review |
 | `tools/check_seams.py` | Offline bridge/injection seam check |
 | `tools/check_live.py` | Fresh-profile public YouTube check |
+
+## Operation composition (unreleased 0.3.0)
+
+The reusable operation is `copy_link(link, clipboard)`. `link` is a function that
+selects the URL at the time of the gesture. On an ordinary page it can be a DOM
+selector; on YouTube a policy selects the video's short or original URL. Neither
+the operation nor the clipboard adapter knows YouTube, subtitles, TAP or WS.
+
+```js
+const { select_link, copy_link, browser_clipboard } = window.TapLinkCopy;
+const link = select_link('#article', document);
+const clipboard = browser_clipboard(navigator, document);
+button.onclick = () => copy_link(link, clipboard).then(showCopied, showError);
+```
+
+`copy-links.js` is the small composition for this pack. It selects the YouTube
+policy (`format: 'short'` by default), connects the existing controls and starts
+an independent caption request on the same gesture. Caption failure cannot fail
+Copy. The request is still allowed to run when clipboard permission fails: these
+are two independent effects, not a transaction.
+
+For a page-local integration, `window.__tapYoutubeCopyLinks.setCaptionsEnabled(false)`
+stops **new** caption requests; `true` reconnects them if the caption module is
+present. In-flight requests are not cancelled. Omitting `youtube-captions.js` and
+`caption-status.js` from an authored bundle leaves Copy working. To change a pack
+bundle, also rebuild its manifest/resource hashes; do not edit installed bytes.
+The switch and `format` are composition settings, **not** a newly supported Core
+profile-config or user-facing settings API. Defaults preserve the previous pack
+behavior. No automatic method registry, type dispatch or new permission model is
+introduced. These modules can share a pack; a small operation does not require a
+separate repo or process.
+
+`tests/composition-browser.cjs` runs the exact same `link-copy.js` on a normal
+links document and a YouTube-shaped document. It covers a changed DOM href, a
+missing selector, clipboard rejection, captions disabled/re-enabled, no caption
+module, and a throwing caption implementation. This is browser fixture evidence,
+not a new public YouTube live run. The prior subtitle PR remains the baseline.
 
 ## Subtitles (unreleased)
 
@@ -44,7 +86,7 @@ Three independently enabled artifacts live in this repository:
 
 | Artifact | Role | Needs Hub? |
 | --- | --- | --- |
-| `example.youtube-copy-links@0.2.0` | Existing page UI and caption request, plus optional confirmation | No for page behavior |
+| `example.youtube-copy-links@0.3.0` | Existing page UI and caption request, plus optional confirmation | No for page behavior |
 | `youtube.subtitles@0.1.0` | Reader writes retained player/details and timedtext bodies | No for reader-only profile |
 | `youtube.subtitle-status@0.1.0` | Read-only handler confirms matching videoId + text hash | Yes |
 
@@ -79,7 +121,7 @@ contains neither transcript text nor file paths.
 Build the three artifacts using current TAP Core on `PYTHONPATH`:
 
 ```sh
-python3 -B -m tap_core.pack_store build . --output /tmp/copy-0.2.0.tap-pack
+python3 -B -m tap_core.pack_store build . --output /tmp/copy-0.3.0.tap-pack
 python3 -B -m tap_core.pack_store build packs/subtitles --output /tmp/subtitles-0.1.0.tap-pack
 python3 -B -m tap_core.pack_store build packs/subtitle-status --output /tmp/subtitle-status-0.1.0.tap-pack
 ```
@@ -99,6 +141,7 @@ bun tests/caption-status.mjs
 python3 -B tools/check_seams.py
 python3 -B tools/check_subtitles.py --bun /absolute/path/to/bun --output /tmp/subtitles.json
 node tests/caption-browser.cjs /absolute/path/to/playwright /absolute/path/to/Chrome
+node tests/composition-browser.cjs /absolute/path/to/playwright /absolute/path/to/Chrome
 ```
 
 [Installed fixture evidence](evidence/subtitles-installed-fixture.json) covers
@@ -148,7 +191,7 @@ Builds are deterministic:
 ```sh
 PYTHONPATH=/absolute/path/to/tap-core \
   python3 -B -m tap_core.pack_store build . \
-  --output /tmp/example.youtube-copy-links-0.1.0.tap-pack
+  --output /tmp/example.youtube-copy-links-0.3.0.tap-pack
 ```
 
 ## Evidence and limits

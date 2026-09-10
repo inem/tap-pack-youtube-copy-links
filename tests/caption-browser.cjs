@@ -25,7 +25,7 @@ const root=path.resolve(__dirname,'..');
      return {saved:true,videoId:args.videoId,sha256:args.sha256};
     }};
    },mode);
-   for(const name of ['youtube-ui.js','caption-status.js','copy-links.js']) await page.addScriptTag({content:fs.readFileSync(path.join(root,name),'utf8')});
+   for(const name of JSON.parse(fs.readFileSync(path.join(root,'pack.json'),'utf8')).resources.map(r=>r.file)) await page.addScriptTag({content:fs.readFileSync(path.join(root,name),'utf8')});
    await page.getByRole('button',{name:'Copy video URL https://youtu.be/dQw4w9WgXcQ',exact:true}).click();
    await page.waitForFunction(mode=>{
     const req=window.__tapYoutubeCopyLinks.lastCaptionRequest;

@@ -1,0 +1,68 @@
+{
+  "scope": "real Chrome with synthetic DOM and HTTP/WS responses; source scripts from manifest; not a public YouTube run",
+  "pack_commit": "e8dfb451afa5107b3286f286a1a6ab4ba3b6c6e1",
+  "browser": "152.0.7977.76",
+  "passed": true,
+  "resource_sha256": {
+    "youtube-ui.js": "77317dfe7a6708eb0d96ce465ce619aefb5a226b4c4ebaa8c16c78540cc467ed",
+    "link-copy.js": "2779fd18b1a1549b75f46363fa9b6148e793ab861c92b0ad8bdaefebad2f0193",
+    "youtube-link-policy.js": "9885c4603231a3651dcfcef34f5cd8ad24a7a24408ec14952e2dbe84d94fc32b",
+    "caption-status.js": "950f62d1bfb4bab1c3a5f00d3ec74f8d5150dac30ff7281af510f10c4b54e3f9",
+    "youtube-captions.js": "5295da141e6b851295fcfd28158f8fa27020b4fbc48830e080702a9f88bbba16",
+    "youtube-copy-controls.js": "251a55a25ee808e3c63dd6351187f8bc02311c6d49eb3c1f7ccffef5f387f90d",
+    "copy-links.js": "590db30b4456f6500e8d11467c483ae55426c3641548199e7db5031a261e01cb"
+  },
+  "composition_checks": [
+    "plain DOM: relative link, changed href, missing link, clipboard failure",
+    "YouTube: captions disabled then enabled, same Copy",
+    "YouTube: caption module absent, same Copy",
+    "YouTube: caption operation throws, same Copy"
+  ],
+  "caption_regression_checks": [
+    {
+      "mode": "off",
+      "copy": true,
+      "caption_requests": 1,
+      "local": "unavailable",
+      "status": "fetched"
+    },
+    {
+      "mode": "connected",
+      "copy": true,
+      "caption_requests": 1,
+      "local": "saved",
+      "status": "fetched"
+    },
+    {
+      "mode": "disconnected",
+      "copy": true,
+      "caption_requests": 1,
+      "local": "unavailable",
+      "status": "fetched"
+    },
+    {
+      "mode": "empty",
+      "copy": true,
+      "caption_requests": 1,
+      "local": null,
+      "status": "failed"
+    },
+    {
+      "mode": "unavailable",
+      "copy": true,
+      "caption_requests": 0,
+      "local": null,
+      "status": "unavailable"
+    }
+  ],
+  "commands": [
+    "node tests/composition-browser.cjs <playwright-package> <Chrome>",
+    "node tests/caption-browser.cjs <playwright-package> <Chrome>"
+  ],
+  "additional_validation": {
+    "python_reader_tests": 9,
+    "caption_confirmation_scenarios": 7,
+    "manifest_valid": true,
+    "bridge_seams_passed": true
+  }
+}

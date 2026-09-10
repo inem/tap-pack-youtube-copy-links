@@ -59,3 +59,13 @@ YouTube, tokens or private session contents are included. Test captions are synt
 On Core with #72, page script URLs use content hashes and new documents can
 pick up page-only changes without a proxy restart. These scripts still use the
 classic-script contract: changing already executed code requires page reload.
+
+## Composition slice (0.3.0)
+
+`youtube-copy-controls.js` and `youtube-captions.js` extract the UI and caption
+behavior from the preceding `copy-links.js`; the immutable `youtube-ui.js`
+provider and `caption-status.js` bytes are unchanged. `link-copy.js` contains
+site-independent copy and browser/selector adapters; `youtube-link-policy.js`
+contains the YouTube URL policy. The new `copy-links.js` explicitly composes them.
+All new and extracted code remains under this repository's MIT license. Resource
+hashes and ordered resource identities are recorded in `pack.json`.

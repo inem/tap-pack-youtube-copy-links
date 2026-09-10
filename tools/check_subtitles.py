@@ -57,7 +57,7 @@ def main():
         before=path.read_bytes();reader.run(spec);assert path.read_bytes()==before
         report.update(reader_without_hub=True,checkpoint_resume=True,artifact_sha256=artifacts)
         profile.components['bun']=str(args.bun.resolve());profile.bridge['enabled']=True;profile.save()
-        store.enable('example.youtube-copy-links','0.2.0',origins=['https://www.youtube.com','https://youtube.com'],capabilities=['page.inject'])
+        store.enable('example.youtube-copy-links',json.loads((ROOT/'pack.json').read_text())['version'],origins=['https://www.youtube.com','https://youtube.com'],capabilities=['page.inject'])
         store.enable('youtube.subtitle-status','0.1.0',origins=['https://www.youtube.com','https://youtube.com'],capabilities=['bridge.handle'])
         prepare(profile)
         result=subprocess.run([str(args.bun),str(ROOT/'tests/subtitle_ws.mjs'),str(profile.root),str(CORE/'tap_core/hub.mjs'),hashlib.sha256(body.encode()).hexdigest()],capture_output=True,text=True,timeout=20)

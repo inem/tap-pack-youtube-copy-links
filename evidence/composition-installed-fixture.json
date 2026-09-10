@@ -1,0 +1,20 @@
+{
+  "scope": "installed artifacts, synthetic capture record, real reader subprocess and Hub WS; no public YouTube or launchd",
+  "scenario_passed": true,
+  "reader_without_hub": true,
+  "checkpoint_resume": true,
+  "artifact_sha256": {
+    "example.youtube-copy-links": "ab4fb5714dd5d65471743234a283ae4373713acb5c6ee6028e178e1211434024",
+    "youtube.subtitles": "7aa93ee81c661336064d20bde441a412b20136c886812206c16ee01ac01daa72",
+    "youtube.subtitle-status": "2c86957ec699d2477e809b032ea8e7f84f94423d73cd45ade169bd116efcd7d4"
+  },
+  "ws": {
+    "ok": true,
+    "matching_saved": true,
+    "stale_denied": true,
+    "missing_denied": true
+  },
+  "pack_commit": "e8dfb451afa5107b3286f286a1a6ab4ba3b6c6e1",
+  "core_commit": "4b2d938db2acac963e1776d73939bc771bb4779d",
+  "temporary_profile_removed": true
+}
